@@ -5,17 +5,39 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "mentors")
+@Table(name = "member")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Mentor {
+public class Member {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+
+	@Column(name = "email",unique = true)
+	private String email;
+
+	@Column(name = "password")
+	private String password;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	@Column(name = "name")
 	private String name;
@@ -41,7 +63,19 @@ public class Mentor {
 	@Column(name = "city")
 	private String city;
 
-	public Mentor(String name, String sport, String description, String discordlink, String gameprofile, String country, String state, String city) {
+	@Column(name = "mentor")
+	private boolean mentor;
+
+	public boolean isMentor() {
+		return mentor;
+	}
+
+	public void setMentor(boolean mentor) {
+		this.mentor = mentor;
+	}
+
+	public Member(String name, String sport, String description, String discordlink, String gameprofile, String country, String state, String city, boolean mentor,
+	String email,String password) {
 		this.name = name;
 		this.sport = sport;
 		this.description = description;
@@ -50,5 +84,8 @@ public class Mentor {
 		this.country = country;
 		this.state = state;
 		this.city = city;
+		this.mentor = mentor;
+		this.email = email;
+		this.password = password;
 	}
 }
