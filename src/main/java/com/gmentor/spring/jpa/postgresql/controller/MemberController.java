@@ -1,8 +1,6 @@
 package com.gmentor.spring.jpa.postgresql.controller;
 
 import java.util.List;
-import java.util.Optional;
-
 import com.gmentor.spring.jpa.postgresql.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

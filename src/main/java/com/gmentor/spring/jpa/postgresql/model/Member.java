@@ -3,6 +3,8 @@ package com.gmentor.spring.jpa.postgresql.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -14,7 +16,9 @@ import javax.persistence.*;
 public class Member {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_id_generator")
+	@SequenceGenerator(name = "member_id_generator", sequenceName = "member_id_seq", allocationSize = 1)
+	@Column(name = "id")
 	private long id;
 
 	@Column(name = "email",unique = true)
@@ -66,12 +70,24 @@ public class Member {
 	@Column(name = "mentor")
 	private boolean mentor;
 
+	@OneToMany(
+			mappedBy = "admin",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
+	private List<Sponsorship> admin = new ArrayList<>();
+
 	public boolean isMentor() {
 		return mentor;
 	}
 
 	public void setMentor(boolean mentor) {
 		this.mentor = mentor;
+	}
+
+	public void addSponsorshipadmin(Sponsorship sp) {
+		admin.add(sp);
+		// sp.setadmin(this)
 	}
 
 	public Member(String name, String sport, String description, String discordlink, String gameprofile, String country, String state, String city, boolean mentor,
@@ -88,4 +104,5 @@ public class Member {
 		this.email = email;
 		this.password = password;
 	}
+
 }
