@@ -1,6 +1,7 @@
 package com.gmentor.spring.jpa.postgresql.controller;
 
 import com.gmentor.spring.jpa.postgresql.dao.Sponsorshipdao;
+import com.gmentor.spring.jpa.postgresql.dto.SponsorshipStatusApplicant;
 import com.gmentor.spring.jpa.postgresql.model.Member;
 import com.gmentor.spring.jpa.postgresql.model.Sponsorship;
 import com.gmentor.spring.jpa.postgresql.model.SponsorshipApplied;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -89,5 +91,87 @@ public class SponsorshipController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //method to list applicants applied for sponsorship
+    @GetMapping("/sponsorships/{sponsorshipname}")
+    public ResponseEntity<List<Member>> getAllMembersofSponsorship(
+            @PathVariable(required = true) String sponsorshipname
+    ) {
+        try {
+            List<SponsorshipApplied> sponsorshipApplied = sponsorshipAppliedRepository.findByName(sponsorshipname);
+            List<Member> members = new ArrayList<>();
+            sponsorshipApplied.stream().forEach(
+                    sponsorshipApplied1 -> {
+                        members.add(memberRepository.findByEmail(sponsorshipApplied1.getEmail()).get(0));
+                    }
+            );
+            return new ResponseEntity<>(members,HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // method to list sponsorship details of applicant
+    @GetMapping("/sponsorships/applicant/{email}")
+    public ResponseEntity<List<SponsorshipStatusApplicant>> getAllSponsorshipsOfApplicant(
+            @PathVariable(required = true) String email
+    )
+    {
+        try {
+            List<Sponsorship> sponsorship = sponsorshipRepository.findAll();
+            List<Sponsorship> admins = memberRepository.findByEmail(email).get(0).getAdmin();
+            List<SponsorshipApplied> sponsorshipApplied = sponsorshipAppliedRepository.findByEmail(email);
+            List<SponsorshipStatusApplicant> status = new ArrayList<>();
+
+            for (Sponsorship sp: sponsorship)
+            {
+                boolean admin = false;
+                boolean applied = false;
+                for (Sponsorship ad: admins)
+                {
+                    if(sp.getName().equals(ad.getName()))
+                    {
+                        status.add(
+                                new SponsorshipStatusApplicant(
+                                      sp.getName(),sp.getDescription(),true,false
+                                )
+                        );
+                        admin = true;
+                        break;
+                    }
+                }
+                for (SponsorshipApplied ap: sponsorshipApplied)
+                {
+                    if(ap.getName().equals(sp.getName()))
+                    {
+                        status.add(
+                                new SponsorshipStatusApplicant(
+                                        sp.getName(),sp.getDescription(),false,true
+                                )
+                        );
+                        applied = true;
+                        break;
+                    }
+                }
+                if(!applied && !admin )
+                {
+                    status.add(
+                            new SponsorshipStatusApplicant(
+                                    sp.getName(),sp.getDescription(),false,false
+                            )
+                    );
+                }
+            }
+            return new ResponseEntity<>(status,HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+
 
 }

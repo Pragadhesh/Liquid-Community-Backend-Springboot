@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface SponsorshipAppliedRepository extends JpaRepository<SponsorshipApplied,Long> {
 
-    List<Sponsorship> findByName(String name);
+    List<SponsorshipApplied> findByName(String name);
 
-    List<Sponsorship> findByEmail(String email);
+    List<SponsorshipApplied> findByEmail(String email);
 
 
 }

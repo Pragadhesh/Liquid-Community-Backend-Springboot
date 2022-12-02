@@ -21,7 +21,7 @@ public class Sponsorship {
     @SequenceGenerator(name = "sponsorship_id_generator", sequenceName = "sponsorship_id_seq", allocationSize = 1)
     private long id;
 
-    @Column(name = "name")
+    @Column(name = "name",unique = true)
     private String name;
 
     @Column(name = "description")
