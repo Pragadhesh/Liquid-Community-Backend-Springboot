@@ -31,6 +31,7 @@ public class Sponsorship {
     @JsonIgnore
     private Member admin;
 
+
     public Sponsorship(String name, String description,Member member) {
         this.name = name;
         this.description = description;

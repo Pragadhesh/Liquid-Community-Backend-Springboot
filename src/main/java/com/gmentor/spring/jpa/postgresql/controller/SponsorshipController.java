@@ -3,7 +3,9 @@ package com.gmentor.spring.jpa.postgresql.controller;
 import com.gmentor.spring.jpa.postgresql.dao.Sponsorshipdao;
 import com.gmentor.spring.jpa.postgresql.model.Member;
 import com.gmentor.spring.jpa.postgresql.model.Sponsorship;
+import com.gmentor.spring.jpa.postgresql.model.SponsorshipApplied;
 import com.gmentor.spring.jpa.postgresql.repository.MemberRepository;
+import com.gmentor.spring.jpa.postgresql.repository.SponsorshipAppliedRepository;
 import com.gmentor.spring.jpa.postgresql.repository.SponsorshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -25,6 +26,9 @@ public class SponsorshipController {
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    SponsorshipAppliedRepository sponsorshipAppliedRepository;
+
     //method to view all sponsorships
     @GetMapping("/sponsorships")
     public ResponseEntity<List<Sponsorship>> getAllSponsorships() {
@@ -35,9 +39,6 @@ public class SponsorshipController {
             return new ResponseEntity<>(sponsorship, HttpStatus.OK);
         }
     }
-
-
-
 
     // method to create sponsorship
     @PostMapping("/sponsorships")
@@ -63,6 +64,30 @@ public class SponsorshipController {
         }
     }
 
-
+    // method to apply for sponsorship
+    @PostMapping("/apply")
+    @Transactional
+    public ResponseEntity<SponsorshipApplied> applySponsorship(
+            @RequestParam(required = true) String email,
+            @RequestParam(required = true) String name
+    ) {
+        try {
+            List<Member> member_details = memberRepository.findByEmail(email);
+            List<Sponsorship> sponsorship_details = sponsorshipRepository.findByName(name);
+            if (member_details.isEmpty() || sponsorship_details.isEmpty()) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            } else {
+                Member member = member_details.get(0);
+                Sponsorship sponsorship = sponsorship_details.get(0);
+                SponsorshipApplied sponsorshipApplied =
+                        sponsorshipAppliedRepository.save(
+                                new SponsorshipApplied(member.getEmail(),sponsorship.getName())
+                        );
+                return new ResponseEntity<>(sponsorshipApplied, HttpStatus.ACCEPTED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

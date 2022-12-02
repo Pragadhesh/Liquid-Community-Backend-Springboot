@@ -87,7 +87,6 @@ public class Member {
 
 	public void addSponsorshipadmin(Sponsorship sp) {
 		admin.add(sp);
-		// sp.setadmin(this)
 	}
 
 	public Member(String name, String sport, String description, String discordlink, String gameprofile, String country, String state, String city, boolean mentor,
