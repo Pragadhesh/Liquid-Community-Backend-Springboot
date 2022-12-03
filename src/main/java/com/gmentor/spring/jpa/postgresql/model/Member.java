@@ -49,14 +49,12 @@ public class Member {
 	@Column(name = "sport")
 	private String sport;
 
-	@Column(name = "description")
-	private String description;
+	@Column(name = "bio")
+	private String bio;
 
 	@Column(name = "discordid")
 	private String discordlink;
 
-	@Column(name = "gameprofile")
-	private String gameprofile;
 
 	@Column(name = "country")
 	private String country;
@@ -89,13 +87,12 @@ public class Member {
 		admin.add(sp);
 	}
 
-	public Member(String name, String sport, String description, String discordlink, String gameprofile, String country, String state, String city, boolean mentor,
+	public Member(String name, String sport, String bio, String discordlink, String country, String state, String city, boolean mentor,
 	String email,String password) {
 		this.name = name;
 		this.sport = sport;
-		this.description = description;
+		this.bio = bio;
 		this.discordlink = discordlink;
-		this.gameprofile = gameprofile;
 		this.country = country;
 		this.state = state;
 		this.city = city;

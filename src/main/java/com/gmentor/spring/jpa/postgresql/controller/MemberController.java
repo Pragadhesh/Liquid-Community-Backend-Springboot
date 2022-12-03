@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gmentor.spring.jpa.postgresql.repository.MemberRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api")
 public class MemberController {
@@ -86,9 +86,9 @@ public class MemberController {
 	public ResponseEntity<Member> createMember(@RequestBody Member member) {
 		try {
 			Member _mentor = memberRepository.save(new Member(member.getName(),
-					member.getSport(), member.getDescription(),
-					member.getDiscordlink(), member.getGameprofile(),
-					member.getCountry(), member.getState(), member.getCity(),
+					member.getSport(), member.getBio(),
+					member.getDiscordlink(), member.getCountry(),
+					member.getState(), member.getCity(),
 					member.isMentor(),member.getEmail(),member.getPassword()
 			));
 			return new ResponseEntity<>(_mentor, HttpStatus.CREATED);
