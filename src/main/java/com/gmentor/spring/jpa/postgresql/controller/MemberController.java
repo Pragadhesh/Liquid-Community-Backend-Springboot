@@ -1,6 +1,8 @@
 package com.gmentor.spring.jpa.postgresql.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.gmentor.spring.jpa.postgresql.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class MemberController {
 	MemberRepository memberRepository;
 
 	@GetMapping("/members/{sport}")
-	public ResponseEntity<List<Member>> getMentorsBySport
+	public ResponseEntity<List<Member>> getMembersBySport
 		(@PathVariable("sport") String sport,
 		@RequestParam(required = false) String country,
 		@RequestParam(required = false) String state,
@@ -46,9 +48,40 @@ public class MemberController {
 			 memberData = memberRepository.findBySportAndCountryAndStateAndCity(sport,country,state,city);
 		}
 		if (memberData.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(memberData,HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(memberData, HttpStatus.OK);
+		}
+	}
+
+	@GetMapping("/mentors/{sport}")
+	public ResponseEntity<List<Member>> getMentorsBySport
+			(@PathVariable("sport") String sport,
+			 @RequestParam(required = false) String country,
+			 @RequestParam(required = false) String state,
+			 @RequestParam(required = false) String city
+			) {
+		List<Member> memberData;
+		if(country == null && state == null && city == null) {
+			memberData = memberRepository.findBySport(sport);
+		} else if (state == null && city == null) {
+			memberData = memberRepository.findBySportAndCountry(sport,country);
+		}
+		else if (city == null)
+		{
+			memberData = memberRepository.findBySportAndCountryAndState(sport,country,state);
+		}
+		else
+		{
+			memberData = memberRepository.findBySportAndCountryAndStateAndCity(sport,country,state,city);
+		}
+		if (memberData.isEmpty()) {
+			return new ResponseEntity<>(memberData,HttpStatus.OK);
+		} else {
+			List<Member> memberData1 = memberData.stream().filter(
+					member -> member.isMentor()
+			).collect(Collectors.toList());
+			return new ResponseEntity<>(memberData1, HttpStatus.OK);
 		}
 	}
 
